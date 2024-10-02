@@ -17,10 +17,8 @@ public class ChopStick {
                 return false;
             }
         }
-        // assert iAmFree;
         iAmFree = false;
-        //System.out.println("baguette " + myNumber + " prise");
-        // Pas utile de faire notifyAll ici, personne n'attend qu'elle soit occupée
+        System.out.println("baguette " + myNumber + " prise");
         return true;
     }
 

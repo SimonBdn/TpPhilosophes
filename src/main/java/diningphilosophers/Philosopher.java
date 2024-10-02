@@ -33,24 +33,38 @@ public class Philosopher extends Thread {
         while (running) {
             try {
                 think();
+                boolean leftTaken = false;
+                boolean rightTaken = false;
+
                 // Aléatoirement prendre la baguette de gauche puis de droite ou l'inverse
-                switch(new Random().nextInt(2)) {
+                switch (new Random().nextInt(2)) {
                     case 0:
-                        myLeftStick.take();
-                        think(); // pour augmenter la probabilité d'interblocage
-                        myRightStick.take();
+                        leftTaken = myLeftStick.take();
+                        if (leftTaken) {
+                            think(); // pour augmenter la probabilité d'interblocage
+                            rightTaken = myRightStick.take();
+                        }
                         break;
                     case 1:
-                        myRightStick.take();
-                        think(); // pour augmenter la probabilité d'interblocage
-                        myLeftStick.take();
+                        rightTaken = myRightStick.take();
+                        if (rightTaken) {
+                            think(); // pour augmenter la probabilité d'interblocage
+                            leftTaken = myLeftStick.take();
+                        }
                 }
-                // Si on arrive ici, on a pu "take" les 2 baguettes
-                eat();
-                // On libère les baguettes :
-                myLeftStick.release();
-                myRightStick.release();
-                // try again
+
+                if (leftTaken && rightTaken) {
+                    eat();
+                    myLeftStick.release();
+                    myRightStick.release();
+                } else {
+                    if (leftTaken) {
+                        myLeftStick.release();
+                    }
+                    if (rightTaken) {
+                        myRightStick.release();
+                    }
+                }
             } catch (InterruptedException ex) {
                 Logger.getLogger("Table").log(Level.SEVERE, "{0} Interrupted", this.getName());
             }
